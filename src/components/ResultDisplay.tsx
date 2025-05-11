@@ -2,8 +2,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Download, Copy, CheckCheck, ExternalLink } from 'lucide-react';
+import { Download, Copy, CheckCheck, ExternalLink, Globe } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { WebCloneService } from '@/services/WebCloneService';
+import { useNavigate } from 'react-router-dom';
 
 interface ResultDisplayProps {
   html: string | null;
@@ -12,7 +14,9 @@ interface ResultDisplayProps {
 
 const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
   const [copied, setCopied] = React.useState(false);
+  const [publishing, setPublishing] = React.useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   if (!html || !url) return null;
   
@@ -53,6 +57,30 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
     });
   };
 
+  const handlePublish = () => {
+    setPublishing(true);
+    try {
+      // Publish the website and get the unique ID
+      const publishId = WebCloneService.publishWebsite(html, url);
+      
+      toast({
+        title: "Website Published!",
+        description: "Your cloned website is now published and ready to view",
+      });
+      
+      // Navigate to the published site
+      navigate(`/view/${publishId}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to publish website. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return (
     <Card className="w-full mt-8 bg-secondary/20">
       <CardContent className="pt-6">
@@ -80,30 +108,46 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between gap-4 pt-2 pb-6">
+      <CardFooter className="flex flex-col gap-4 pt-2 pb-6">
+        <div className="flex justify-between gap-4 w-full">
+          <Button 
+            variant="outline" 
+            className="flex-1" 
+            onClick={handleCopyCode}
+          >
+            {copied ? (
+              <>
+                <CheckCheck className="mr-2 h-4 w-4" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="mr-2 h-4 w-4" />
+                Copy Code
+              </>
+            )}
+          </Button>
+          <Button 
+            className="flex-1 bg-clone-primary hover:bg-clone-secondary" 
+            onClick={handleDownload}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download HTML
+          </Button>
+        </div>
         <Button 
-          variant="outline" 
-          className="flex-1" 
-          onClick={handleCopyCode}
+          className="w-full bg-gradient-to-r from-clone-primary to-clone-accent hover:opacity-90 transition-opacity" 
+          onClick={handlePublish}
+          disabled={publishing}
         >
-          {copied ? (
-            <>
-              <CheckCheck className="mr-2 h-4 w-4" />
-              Copied
-            </>
+          {publishing ? (
+            <>Processing...</>
           ) : (
             <>
-              <Copy className="mr-2 h-4 w-4" />
-              Copy Code
+              <Globe className="mr-2 h-4 w-4" />
+              Publish Cloned Website
             </>
           )}
-        </Button>
-        <Button 
-          className="flex-1 bg-clone-primary hover:bg-clone-secondary" 
-          onClick={handleDownload}
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Download HTML
         </Button>
       </CardFooter>
     </Card>

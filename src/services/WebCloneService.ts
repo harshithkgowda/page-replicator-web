@@ -1,4 +1,3 @@
-
 /**
  * Web Cloning Service
  * 
@@ -17,6 +16,9 @@ export class WebCloneService {
     'https://api.codetabs.com/v1/proxy?quest=',
     'https://thingproxy.freeboard.io/fetch/',
   ];
+
+  // Store published sites in localStorage with this key
+  private static PUBLISHED_SITES_KEY = 'published_sites';
 
   /**
    * Clones a website by fetching its HTML content
@@ -196,5 +198,87 @@ export class WebCloneService {
       }
     `;
     doc.head.appendChild(styleTag);
+  }
+
+  /**
+   * Publishes a cloned website and returns a unique URL
+   * @param html - The HTML content to publish
+   * @param sourceUrl - The original source URL
+   * @returns A unique ID that can be used to access the published site
+   */
+  static publishWebsite(html: string, sourceUrl: string): string {
+    // Generate a unique ID for the published site
+    const publishId = this.generateUniqueId();
+    
+    // Get existing published sites or initialize empty array
+    const publishedSites = this.getPublishedSites();
+    
+    // Add the new site to the published sites
+    publishedSites.push({
+      id: publishId,
+      html: html,
+      sourceUrl: sourceUrl,
+      publishDate: new Date().toISOString(),
+      title: this.extractTitleFromHtml(html) || sourceUrl
+    });
+    
+    // Save the updated list back to localStorage
+    localStorage.setItem(this.PUBLISHED_SITES_KEY, JSON.stringify(publishedSites));
+    
+    return publishId;
+  }
+  
+  /**
+   * Generates a unique ID for published sites
+   * @returns A unique ID string
+   */
+  private static generateUniqueId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 15);
+  }
+  
+  /**
+   * Retrieves all published sites from localStorage
+   * @returns Array of published site objects
+   */
+  static getPublishedSites(): Array<{
+    id: string;
+    html: string;
+    sourceUrl: string;
+    publishDate: string;
+    title: string;
+  }> {
+    const sites = localStorage.getItem(this.PUBLISHED_SITES_KEY);
+    return sites ? JSON.parse(sites) : [];
+  }
+  
+  /**
+   * Gets a specific published site by ID
+   * @param id - The unique ID of the published site
+   * @returns The published site object or null if not found
+   */
+  static getPublishedSite(id: string): {
+    id: string;
+    html: string;
+    sourceUrl: string;
+    publishDate: string;
+    title: string;
+  } | null {
+    const sites = this.getPublishedSites();
+    return sites.find(site => site.id === id) || null;
+  }
+  
+  /**
+   * Extracts the title from HTML content
+   * @param html - The HTML content
+   * @returns The title text or null if not found
+   */
+  private static extractTitleFromHtml(html: string): string | null {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      return doc.title || null;
+    } catch {
+      return null;
+    }
   }
 }
