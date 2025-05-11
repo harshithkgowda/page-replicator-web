@@ -229,6 +229,32 @@ export class WebCloneService {
   }
   
   /**
+   * Updates a published website with new HTML content
+   * @param id - The ID of the published site to update
+   * @param html - The new HTML content
+   * @returns Boolean indicating success
+   */
+  static updatePublishedSite(id: string, html: string): boolean {
+    const sites = this.getPublishedSites();
+    const siteIndex = sites.findIndex(site => site.id === id);
+    
+    if (siteIndex !== -1) {
+      // Update the HTML while keeping all other properties
+      sites[siteIndex] = {
+        ...sites[siteIndex],
+        html: html,
+        lastEditDate: new Date().toISOString()
+      };
+      
+      // Save the updated list back to localStorage
+      localStorage.setItem(this.PUBLISHED_SITES_KEY, JSON.stringify(sites));
+      return true;
+    }
+    
+    return false;
+  }
+  
+  /**
    * Generates a unique ID for published sites
    * @returns A unique ID string
    */
@@ -245,6 +271,7 @@ export class WebCloneService {
     html: string;
     sourceUrl: string;
     publishDate: string;
+    lastEditDate?: string;
     title: string;
   }> {
     const sites = localStorage.getItem(this.PUBLISHED_SITES_KEY);
@@ -253,7 +280,6 @@ export class WebCloneService {
   
   /**
    * Gets a specific published site by ID
-   * @param id - The unique ID of the published site
    * @returns The published site object or null if not found
    */
   static getPublishedSite(id: string): {
@@ -261,6 +287,7 @@ export class WebCloneService {
     html: string;
     sourceUrl: string;
     publishDate: string;
+    lastEditDate?: string;
     title: string;
   } | null {
     const sites = this.getPublishedSites();
