@@ -66,7 +66,7 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
       console.error("Error cloning website:", error);
       toast({
         title: "Error",
-        description: "Failed to clone website. Please try again.",
+        description: "Failed to clone website. We tried multiple proxy services but couldn't access the site. The website might be blocking our request.",
         variant: "destructive",
       });
     } finally {

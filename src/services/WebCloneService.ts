@@ -2,14 +2,19 @@
 /**
  * Web Cloning Service
  * 
- * This service handles the cloning of websites by using a serverless proxy
+ * This service handles the cloning of websites by using serverless proxies
  * to fetch the HTML content of the target website.
  */
 export class WebCloneService {
   /**
-   * CORS Proxy URL - Used to bypass CORS restrictions when fetching websites
+   * CORS Proxy URLs - Used to bypass CORS restrictions when fetching websites
+   * We use multiple proxies for fallback purposes
    */
-  private static CORS_PROXY = 'https://corsproxy.io/?';
+  private static CORS_PROXIES = [
+    'https://corsproxy.io/?',
+    'https://api.allorigins.win/raw?url=',
+    'https://cors-anywhere.herokuapp.com/',
+  ];
 
   /**
    * Clones a website by fetching its HTML content
@@ -17,32 +22,42 @@ export class WebCloneService {
    * @returns A promise that resolves to the HTML content of the website
    */
   static async cloneWebsite(url: string): Promise<string> {
-    try {
-      console.log(`Attempting to clone website: ${url}`);
-      
-      // Use CORS proxy to fetch the website
-      const response = await fetch(this.CORS_PROXY + encodeURIComponent(url), {
-        method: 'GET',
-        headers: {
-          'Accept': 'text/html',
-        },
-      });
+    let lastError = null;
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch website: ${response.status} ${response.statusText}`);
+    // Try each proxy in sequence until one works
+    for (const proxyUrl of this.CORS_PROXIES) {
+      try {
+        console.log(`Attempting to clone website using proxy: ${proxyUrl}`);
+        
+        // Use current CORS proxy to fetch the website
+        const response = await fetch(proxyUrl + encodeURIComponent(url), {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/html',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch website: ${response.status} ${response.statusText}`);
+        }
+
+        const html = await response.text();
+        
+        // Process the HTML to handle relative URLs
+        const processedHtml = this.processHtml(html, url);
+        
+        console.log('Website cloned successfully');
+        return processedHtml;
+      } catch (error) {
+        console.error(`Error with proxy ${proxyUrl}:`, error);
+        lastError = error;
+        // Continue to the next proxy
       }
-
-      const html = await response.text();
-      
-      // Process the HTML to handle relative URLs
-      const processedHtml = this.processHtml(html, url);
-      
-      console.log('Website cloned successfully');
-      return processedHtml;
-    } catch (error) {
-      console.error('Error cloning website:', error);
-      throw new Error('Failed to clone website. Check the URL and try again.');
     }
+
+    // If all proxies failed, throw the last error
+    console.error('All proxies failed to clone the website');
+    throw new Error('Failed to clone website. Check the URL and try again.');
   }
 
   /**
