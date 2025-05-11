@@ -56,7 +56,19 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
     setLoading(true);
     
     try {
+      // Show a toast that we're trying to clone the site
+      toast({
+        title: "Cloning in progress",
+        description: "This may take a moment for larger websites...",
+      });
+      
       const html = await WebCloneService.cloneWebsite(formattedUrl);
+      
+      // Check if we got a meaningful response
+      if (!html || html.length < 1000) {
+        throw new Error("The cloned content seems incomplete. Try another website.");
+      }
+      
       onCloneComplete(html, formattedUrl);
       toast({
         title: "Success!",
@@ -66,7 +78,7 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
       console.error("Error cloning website:", error);
       toast({
         title: "Error",
-        description: "Failed to clone website. We tried multiple proxy services but couldn't access the site. The website might be blocking our request.",
+        description: "Failed to clone website. We tried multiple proxy services but couldn't access the complete site. The website might be blocking our request or it's too large to clone.",
         variant: "destructive",
       });
     } finally {
@@ -95,11 +107,16 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
         className="h-12 px-6 bg-clone-primary hover:bg-clone-secondary transition-colors"
       >
         {isSubmitting ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Cloning...
+          </>
         ) : (
-          <ArrowRight className="mr-2 h-4 w-4" />
+          <>
+            <ArrowRight className="mr-2 h-4 w-4" />
+            Clone Website
+          </>
         )}
-        Clone Website
       </Button>
     </form>
   );

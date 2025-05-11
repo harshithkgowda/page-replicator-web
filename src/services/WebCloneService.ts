@@ -14,6 +14,8 @@ export class WebCloneService {
     'https://corsproxy.io/?',
     'https://api.allorigins.win/raw?url=',
     'https://cors-anywhere.herokuapp.com/',
+    'https://api.codetabs.com/v1/proxy?quest=',
+    'https://thingproxy.freeboard.io/fetch/',
   ];
 
   /**
@@ -33,8 +35,11 @@ export class WebCloneService {
         const response = await fetch(proxyUrl + encodeURIComponent(url), {
           method: 'GET',
           headers: {
-            'Accept': 'text/html',
+            'Accept': 'text/html,application/xhtml+xml,application/xml',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           },
+          // Increase timeout for larger pages
+          signal: AbortSignal.timeout(25000) // 25 seconds timeout
         });
 
         if (!response.ok) {
@@ -43,7 +48,7 @@ export class WebCloneService {
 
         const html = await response.text();
         
-        // Process the HTML to handle relative URLs
+        // Process the HTML to handle relative URLs and other issues
         const processedHtml = this.processHtml(html, url);
         
         console.log('Website cloned successfully');
@@ -61,7 +66,7 @@ export class WebCloneService {
   }
 
   /**
-   * Processes the HTML to fix relative URLs
+   * Processes the HTML to fix relative URLs and improve rendering
    * @param html - The raw HTML content
    * @param baseUrl - The base URL of the website
    * @returns The processed HTML content
@@ -78,12 +83,33 @@ export class WebCloneService {
         baseTag.href = baseUrl;
         doc.head.insertBefore(baseTag, doc.head.firstChild);
       }
+
+      // Add meta viewport to ensure proper mobile display if not present
+      if (!doc.querySelector('meta[name="viewport"]')) {
+        const metaViewport = doc.createElement('meta');
+        metaViewport.setAttribute('name', 'viewport');
+        metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        doc.head.appendChild(metaViewport);
+      }
       
       // Convert relative URLs to absolute URLs
       this.fixRelativeUrls(doc, 'a', 'href', baseUrlObj);
       this.fixRelativeUrls(doc, 'img', 'src', baseUrlObj);
       this.fixRelativeUrls(doc, 'link', 'href', baseUrlObj);
       this.fixRelativeUrls(doc, 'script', 'src', baseUrlObj);
+      this.fixRelativeUrls(doc, 'iframe', 'src', baseUrlObj);
+      this.fixRelativeUrls(doc, 'source', 'src', baseUrlObj);
+      this.fixRelativeUrls(doc, 'video', 'src', baseUrlObj);
+      this.fixRelativeUrls(doc, 'audio', 'src', baseUrlObj);
+      this.fixRelativeUrls(doc, 'embed', 'src', baseUrlObj);
+      this.fixRelativeUrls(doc, 'object', 'data', baseUrlObj);
+      this.fixRelativeUrls(doc, 'form', 'action', baseUrlObj);
+      
+      // Fix CSS background URLs in inline styles
+      this.fixInlineStyles(doc, baseUrlObj);
+
+      // Add our custom styles to improve preview display
+      this.addCustomStyles(doc);
       
       // Serialize the document back to HTML
       return new XMLSerializer().serializeToString(doc);
@@ -111,9 +137,64 @@ export class WebCloneService {
         } else if (url.startsWith('/')) {
           element.setAttribute(attribute, `${baseUrl.origin}${url}`);
         } else {
-          element.setAttribute(attribute, new URL(url, baseUrl.href).href);
+          try {
+            element.setAttribute(attribute, new URL(url, baseUrl.href).href);
+          } catch (e) {
+            console.error(`Error converting URL: ${url}`, e);
+          }
         }
       }
     });
+  }
+
+  /**
+   * Fixes CSS background URLs in inline styles
+   * @param doc - The document object
+   * @param baseUrl - The base URL object
+   */
+  private static fixInlineStyles(doc: Document, baseUrl: URL): void {
+    const elementsWithStyle = doc.querySelectorAll('[style*="background"]');
+    const urlRegex = /url\(['"]?([^'")]+)['"]?\)/g;
+    
+    elementsWithStyle.forEach(element => {
+      const style = element.getAttribute('style');
+      if (style) {
+        let newStyle = style.replace(urlRegex, (match, url) => {
+          if (!url.startsWith('http') && !url.startsWith('data:')) {
+            try {
+              const absoluteUrl = new URL(url, baseUrl.href).href;
+              return `url('${absoluteUrl}')`;
+            } catch (e) {
+              return match;
+            }
+          }
+          return match;
+        });
+        element.setAttribute('style', newStyle);
+      }
+    });
+  }
+
+  /**
+   * Adds custom styles to improve the preview display
+   * @param doc - The document object
+   */
+  private static addCustomStyles(doc: Document): void {
+    // Add a style tag to fix common display issues in the iframe
+    const styleTag = doc.createElement('style');
+    styleTag.textContent = `
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      img, svg, video, canvas, iframe {
+        max-width: 100%;
+        height: auto;
+      }
+    `;
+    doc.head.appendChild(styleTag);
   }
 }
