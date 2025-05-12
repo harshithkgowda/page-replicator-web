@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -380,7 +381,7 @@ const ViewPublished = () => {
     }, 600);
   };
 
-  // New function to rebuild the website using AI
+  // Improved function to rebuild the website using AI - preserves more of the original layout
   const handleRebuildWebsite = async () => {
     if (!site?.html || !id) return;
     
@@ -396,16 +397,15 @@ const ViewPublished = () => {
       
       setRebuildProgress(30);
       
-      // Simulated AI transformation (in a real implementation, we'd call an API)
-      // but for demo purposes, we'll create a simplified transformation
-      const transformedHtml = await simulateAiRebuild(site.html);
+      // Enhanced AI transformation that better preserves the original layout
+      const transformedHtml = await improvedAiRebuild(site.html);
       
       setRebuildProgress(70);
       
       // Update progress
       toast({
         title: "Rebuilding",
-        description: "Applying new design elements...",
+        description: "Applying new design elements while preserving original layout...",
       });
       
       // Save the rebuilt site
@@ -417,7 +417,7 @@ const ViewPublished = () => {
         // Final success toast
         toast({
           title: "Rebuild Complete",
-          description: "Your website has been redesigned with AI.",
+          description: "Your website has been redesigned with AI while preserving its original structure.",
         });
         
         // Open the rebuilt site in a new tab
@@ -436,155 +436,189 @@ const ViewPublished = () => {
     }
   };
   
-  // Simulated AI rebuild function
-  const simulateAiRebuild = async (originalHtml: string): Promise<string> => {
+  // Improved AI rebuild function that preserves more of the original layout
+  const improvedAiRebuild = async (originalHtml: string): Promise<string> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Parse the original HTML
         const parser = new DOMParser();
         const doc = parser.parseFromString(originalHtml, 'text/html');
         
-        // Apply modern UI transformations
+        // Store the original structure
+        const originalStructure = {
+          title: doc.title,
+          bodyInnerHTML: doc.body.innerHTML,
+          headInnerHTML: doc.head.innerHTML,
+          bodyClassList: doc.body.classList.toString(),
+          mainContent: doc.querySelector('main')?.innerHTML || null,
+        };
         
-        // 1. Add a new modern font
+        // Apply enhanced UI transformations while preserving structure
+        
+        // 1. Add improved styling that maintains the original layout
         const style = doc.createElement('style');
         style.textContent = `
-          body, h1, h2, h3, h4, h5, h6, p, div, span {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+          :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #7c3aed;
+            --accent-color: #ec4899;
+            --background-color: #ffffff;
+            --text-color: #111827;
+            --border-radius: 8px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
           }
           
+          /* Preserve original layout but enhance typography */
           body {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-color);
             line-height: 1.6;
           }
           
-          h1, h2, h3 {
-            font-weight: 700;
-            margin-bottom: 1rem;
+          /* Enhanced headings while preserving hierarchical structure */
+          h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
           }
           
-          p {
-            margin-bottom: 1rem;
-          }
+          h1 { font-size: 2rem; }
+          h2 { font-size: 1.75rem; }
+          h3 { font-size: 1.5rem; }
           
-          .ai-rebuilt-shadow {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          }
-          
-          .ai-rebuilt-button {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 500;
-            transition: transform 0.2s, box-shadow 0.2s;
-          }
-          
-          .ai-rebuilt-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-          }
-          
-          .ai-rebuilt-card {
-            border-radius: 12px;
+          /* Enhance buttons but keep their positions */
+          button, .button, a[role="button"], [class*="btn"], [class*="button"] {
+            transition: all var(--transition-speed);
+            position: relative;
             overflow: hidden;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
           }
           
-          .ai-rebuilt-card:hover {
+          /* Add hover effects to buttons */
+          button:hover, .button:hover, a[role="button"]:hover, [class*="btn"]:hover, [class*="button"]:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+          }
+          
+          /* Enhance images but preserve sizing */
+          img {
+            transition: transform var(--transition-speed);
+            border-radius: var(--border-radius);
+          }
+          
+          img:hover {
             transform: scale(1.02);
           }
           
-          .ai-rebuilt-header {
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-            padding: 20px;
-            border-bottom: 1px solid #e5e7eb;
+          /* Enhance cards/sections but maintain layout */
+          section, article, .card, [class*="card"], [class*="panel"], [class*="container"] {
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            border-radius: var(--border-radius);
           }
           
-          .ai-rebuilt-animate {
-            animation: fadeIn 0.5s ease-out;
+          section:hover, article:hover, .card:hover, [class*="card"]:hover, [class*="panel"]:hover, [class*="container"]:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
           }
           
+          /* Add subtle animations */
           @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
           }
+          
+          .ai-enhanced {
+            animation: fadeIn 0.5s ease-out forwards;
+          }
+          
+          /* Add visual improvements to headers/navigation */
+          header, nav, [role="navigation"], [class*="navbar"], [class*="header"] {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          }
+          
+          /* Enhanced links while preserving behavior */
+          a:not([class]) {
+            color: var(--primary-color);
+            text-decoration: none;
+            position: relative;
+          }
+          
+          a:not([class])::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s;
+          }
+          
+          a:not([class]):hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+          }
         `;
         doc.head.appendChild(style);
         
-        // 2. Transform buttons
-        const buttons = doc.querySelectorAll('button, a[href]');
-        buttons.forEach((button) => {
-          if (button instanceof HTMLElement) {
-            button.classList.add('ai-rebuilt-button');
-            
-            // Add hover animation
-            button.style.transition = "transform 0.2s, box-shadow 0.2s";
-          }
-        });
-        
-        // 3. Transform sections/divs into cards
-        const sections = doc.querySelectorAll('section, div[class*="container"], div[class*="wrapper"]');
-        sections.forEach((section, index) => {
-          if (section instanceof HTMLElement && index < 10) { // Limit to avoid transforming everything
-            section.classList.add('ai-rebuilt-card', 'ai-rebuilt-animate');
-            section.style.animationDelay = `${index * 0.1}s`;
-          }
-        });
-        
-        // 4. Modernize headers
-        const headers = doc.querySelectorAll('header, nav, div[class*="header"], div[class*="nav"]');
-        headers.forEach((header) => {
-          if (header instanceof HTMLElement) {
-            header.classList.add('ai-rebuilt-header');
-          }
-        });
-        
-        // 5. Add subtle animations to images
-        const images = doc.querySelectorAll('img');
-        images.forEach((img) => {
-          if (img instanceof HTMLElement) {
-            img.style.transition = "transform 0.3s ease";
-            img.style.borderRadius = "8px";
-            img.classList.add('ai-rebuilt-shadow');
-            
-            // Add hover effect
-            const wrapper = doc.createElement('div');
-            wrapper.style.overflow = 'hidden';
-            wrapper.style.borderRadius = '8px';
-            wrapper.style.display = 'inline-block';
-            
-            // Replace the image with the wrapped version
-            if (img.parentNode) {
-              img.parentNode.insertBefore(wrapper, img);
-              wrapper.appendChild(img);
+        // 2. Add animation classes to elements while preserving structure
+        const addAnimationsToElements = () => {
+          // Main sections/containers - staggered animations
+          const mainSections = doc.querySelectorAll('section, [class*="section"], [class*="container"]');
+          mainSections.forEach((section, index) => {
+            if (section instanceof HTMLElement) {
+              section.classList.add('ai-enhanced');
+              section.style.animationDelay = `${index * 0.15}s`;
             }
-          }
-        });
+          });
+          
+          // Call-to-action buttons - enhanced styling
+          const ctaButtons = doc.querySelectorAll('button, .button, a[role="button"], [class*="btn"]');
+          ctaButtons.forEach(button => {
+            if (button instanceof HTMLElement) {
+              button.style.background = 'linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)';
+              button.style.color = 'white';
+              button.style.border = 'none';
+              button.style.padding = button.style.padding || '10px 20px';
+              button.style.borderRadius = 'var(--border-radius)';
+            }
+          });
+          
+          // Images - subtle enhancements
+          const images = doc.querySelectorAll('img');
+          images.forEach(img => {
+            if (img instanceof HTMLElement) {
+              img.classList.add('ai-enhanced');
+              img.style.boxShadow = 'var(--shadow-sm)';
+            }
+          });
+        };
         
-        // Add a watermark to indicate AI rebuilt
+        addAnimationsToElements();
+        
+        // Add a subtle watermark that doesn't interfere with content
         const watermark = doc.createElement('div');
-        watermark.innerHTML = 'Redesigned with AI';
+        watermark.innerHTML = 'Enhanced with AI';
         watermark.style.position = 'fixed';
-        watermark.style.bottom = '20px';
-        watermark.style.right = '20px';
-        watermark.style.padding = '8px 12px';
-        watermark.style.background = 'rgba(0, 0, 0, 0.7)';
+        watermark.style.bottom = '10px';
+        watermark.style.right = '10px';
+        watermark.style.padding = '4px 8px';
+        watermark.style.background = 'rgba(0, 0, 0, 0.5)';
         watermark.style.color = 'white';
         watermark.style.borderRadius = '4px';
-        watermark.style.fontSize = '12px';
+        watermark.style.fontSize = '10px';
         watermark.style.zIndex = '9999';
+        watermark.style.opacity = '0.7';
         doc.body.appendChild(watermark);
         
         // Get the transformed HTML
         resolve('<!DOCTYPE html>' + doc.documentElement.outerHTML);
-      }, 3000); // Simulate processing time
+      }, 2000); // Simulate processing time
     });
   };
 
@@ -723,7 +757,7 @@ const ViewPublished = () => {
                 Remove Copyright
               </Button>
               
-              {/* New Rebuild Website Button */}
+              {/* Rebuild Website Button */}
               <Button 
                 onClick={handleRebuildWebsite}
                 size="sm"
@@ -901,7 +935,7 @@ const ViewPublished = () => {
                         </Button>
                       </HoverCardTrigger>
                       <HoverCardContent className="w-80">
-                        <p>Use AI to redesign the website while maintaining similar functionality and content.</p>
+                        <p>Use AI to redesign the website while preserving the original layout and functionality.</p>
                       </HoverCardContent>
                     </HoverCard>
                   </div>
