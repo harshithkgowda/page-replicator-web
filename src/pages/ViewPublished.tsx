@@ -292,15 +292,33 @@ const ViewPublished = () => {
     }, 300);
   };
   
-  // Clean layout and remove copyright
+  // Clean layout and remove copyright - UPDATED to open in new tab automatically
   const handleCleanLayout = () => {
     sendMessageToIframe('CLEAN_LAYOUT');
+    
+    // Wait for the cleanup to finish
     setTimeout(() => {
+      // Get the updated HTML
       sendMessageToIframe('GET_HTML');
-      toast({
-        title: "Layout cleaned",
-        description: "Copyright content and unnecessary elements have been removed.",
-      });
+      
+      // Wait for the HTML to be updated
+      setTimeout(() => {
+        if (id && editedHtml) {
+          // Save the changes
+          WebCloneService.updatePublishedSite(id, editedHtml);
+          
+          // Create a data URL for the cleaned HTML
+          const cleanedDataUrl = createDataUrl(editedHtml);
+          
+          // Open in a new tab
+          window.open(cleanedDataUrl, '_blank');
+          
+          toast({
+            title: "Layout cleaned",
+            description: "Copyright content removed and website opened in new tab.",
+          });
+        }
+      }, 500);
     }, 300);
   };
 
@@ -418,6 +436,16 @@ const ViewPublished = () => {
               >
                 <Edit className="mr-1 h-4 w-4" />
                 {editMode ? "Editing Mode" : "Edit Website"}
+              </Button>
+
+              {/* Direct Clean Layout Button - Visible even when not in edit mode */}
+              <Button 
+                onClick={handleCleanLayout}
+                size="sm"
+                variant="outline"
+              >
+                <Layout className="mr-1 h-4 w-4" />
+                Remove Copyright
               </Button>
               
               <a
