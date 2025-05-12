@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -58,6 +57,7 @@ const ViewPublished = () => {
   
   // Create a data URL for the HTML content
   const createDataUrl = (html: string) => {
+    // Make sure to preserve the doctype and full HTML structure
     return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
   };
 
@@ -107,6 +107,7 @@ const ViewPublished = () => {
         setSelectedElement(event.data.element);
         setNewText(event.data.text || '');
       } else if (event.data && event.data.type === 'HTML_CONTENT') {
+        console.log("Received HTML content from iframe");
         setEditedHtml(event.data.html);
       }
     };
@@ -292,41 +293,73 @@ const ViewPublished = () => {
     }, 300);
   };
   
-  // Clean layout and remove copyright - UPDATED to open in new tab automatically
+  // Clean layout and remove copyright - FIXED to properly open in new tab
   const handleCleanLayout = () => {
+    // First, show a loading toast
+    toast({
+      title: "Processing",
+      description: "Removing copyright content and cleaning layout...",
+    });
+    
+    // Apply the cleaning script to the iframe content
     sendMessageToIframe('CLEAN_LAYOUT');
     
-    // Wait for the cleanup to finish
+    // Wait for the cleanup to finish before getting the HTML
     setTimeout(() => {
       // Get the updated HTML
       sendMessageToIframe('GET_HTML');
       
-      // Wait for the HTML to be updated
+      // Wait a bit longer to ensure we've received the updated HTML
       setTimeout(() => {
         if (id && editedHtml) {
-          // Save the changes
-          WebCloneService.updatePublishedSite(id, editedHtml);
-          
-          // Create a data URL for the cleaned HTML
-          const cleanedDataUrl = createDataUrl(editedHtml);
-          
-          // Open in a new tab
-          window.open(cleanedDataUrl, '_blank');
-          
-          toast({
-            title: "Layout cleaned",
-            description: "Copyright content removed and website opened in new tab.",
-          });
+          try {
+            // Save the changes to persist them
+            WebCloneService.updatePublishedSite(id, editedHtml);
+            
+            // Get the updated site to ensure we have the latest HTML
+            const updatedSite = WebCloneService.getPublishedSite(id);
+            
+            if (updatedSite && updatedSite.html) {
+              // Create a data URL for the cleaned HTML with proper HTML structure
+              const cleanedDataUrl = createDataUrl(updatedSite.html);
+              
+              // Open in a new tab
+              window.open(cleanedDataUrl, '_blank');
+              
+              toast({
+                title: "Layout cleaned",
+                description: "Copyright content removed and website opened in new tab.",
+              });
+            } else {
+              toast({
+                title: "Error",
+                description: "Could not retrieve the updated site content.",
+                variant: "destructive"
+              });
+            }
+          } catch (error) {
+            console.error("Error in clean layout process:", error);
+            toast({
+              title: "Error",
+              description: "Failed to process the website. Please try again.",
+              variant: "destructive"
+            });
+          }
         }
-      }, 500);
-    }, 300);
+      }, 800); // Increased delay to ensure HTML is fully processed
+    }, 500);
   };
 
-  // Get final HTML from iframe before saving
+  // Get final HTML from iframe before saving - with better error handling
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'HTML_CONTENT') {
-        setEditedHtml(event.data.html);
+        console.log("Received HTML from iframe for saving, length:", event.data.html.length);
+        if (event.data.html && event.data.html.length > 0) {
+          setEditedHtml(event.data.html);
+        } else {
+          console.error("Received empty HTML content from iframe");
+        }
       }
     };
 
@@ -338,23 +371,29 @@ const ViewPublished = () => {
   const handleFinishEditing = () => {
     sendMessageToIframe('GET_HTML');
     
-    // Give time for the HTML to be received
+    // Give more time for the HTML to be received
     setTimeout(() => {
       handleSaveEdits();
       setIsDrawerOpen(false);
-    }, 500);
+    }, 600);
   };
 
-  // Create custom iframe to inject editor script
+  // Create custom iframe to inject editor script - FIXED to handle content properly
   const InjectedIframe = () => {
     const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
     const injectScript = (frameElement: HTMLIFrameElement) => {
       try {
+        if (!site?.html) {
+          console.error("No HTML content available for the iframe");
+          return;
+        }
+        
         const frameDoc = frameElement.contentDocument || frameElement.contentWindow?.document;
         if (frameDoc) {
+          // Properly open and write the full HTML content
           frameDoc.open();
-          frameDoc.write(site?.html || '');
+          frameDoc.write(site.html);
           frameDoc.close();
           
           // Add message listener to iframe
@@ -362,11 +401,32 @@ const ViewPublished = () => {
           script.textContent = `
             window.addEventListener('message', (event) => {
               if (event.data && event.data.action === 'INJECT_SCRIPT') {
-                const scriptEl = document.createElement('script');
-                scriptEl.textContent = event.data.data.script;
-                document.body.appendChild(scriptEl);
+                try {
+                  const scriptEl = document.createElement('script');
+                  scriptEl.textContent = event.data.data.script;
+                  document.body.appendChild(scriptEl);
+                  console.log('Script injected successfully');
+                } catch (e) {
+                  console.error('Error injecting script:', e);
+                }
+              }
+              
+              if (event.data && event.data.action === 'GET_HTML') {
+                try {
+                  // Make sure to capture the complete HTML including doctype
+                  const fullHtml = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+                  window.parent.postMessage({
+                    type: 'HTML_CONTENT',
+                    html: fullHtml
+                  }, '*');
+                  console.log('HTML content sent to parent');
+                } catch (e) {
+                  console.error('Error sending HTML content:', e);
+                }
               }
             });
+            
+            console.log('IFrame message listener initialized');
           `;
           frameDoc.body.appendChild(script);
         }
@@ -376,10 +436,15 @@ const ViewPublished = () => {
     };
     
     useEffect(() => {
-      if (iframeRef.current) {
-        injectScript(iframeRef.current);
-      }
-    }, [iframeRef]);
+      // Make sure the iframe is ready before injecting
+      const timer = setTimeout(() => {
+        if (iframeRef.current) {
+          injectScript(iframeRef.current);
+        }
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }, [iframeRef, site]);
 
     return (
       <iframe
