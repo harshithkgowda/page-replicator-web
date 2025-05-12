@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { WebCloneService } from '@/services/WebCloneService';
-import { ArrowLeft, ExternalLink, Calendar, Save, Edit, Trash2, Type, Layout, Font } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Calendar, Save, Edit, Trash2, Type, Layout } from 'lucide-react';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
