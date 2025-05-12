@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { WebCloneService } from '@/services/WebCloneService';
-import { ArrowLeft, ExternalLink, Calendar, Save, Edit, Trash2, Type } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Calendar, Save, Edit, Trash2, Type, Layout, Font } from 'lucide-react';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { toast } from '@/hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const ViewPublished = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +25,7 @@ const ViewPublished = () => {
   const [isTextEditOpen, setIsTextEditOpen] = useState(false);
   const [newText, setNewText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedFont, setSelectedFont] = useState('default');
   
   useEffect(() => {
     if (id) {
@@ -79,6 +81,11 @@ const ViewPublished = () => {
     
     if (newEditMode) {
       setIsDrawerOpen(true);
+      toast({
+        title: "Edit mode activated",
+        description: "Click on any element to edit or remove it.",
+        duration: 5000,
+      });
     } else {
       setSelectedElement(null);
     }
@@ -96,8 +103,11 @@ const ViewPublished = () => {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'ELEMENT_SELECTED') {
+        console.log("Element selected:", event.data.element);
         setSelectedElement(event.data.element);
         setNewText(event.data.text || '');
+      } else if (event.data && event.data.type === 'HTML_CONTENT') {
+        setEditedHtml(event.data.html);
       }
     };
 
@@ -127,12 +137,21 @@ const ViewPublished = () => {
 
         // Make elements selectable
         const makeElementsSelectable = () => {
-          const allElements = document.querySelectorAll('button, a, p, h1, h2, h3, h4, h5, h6, span, div');
+          const allElements = document.querySelectorAll('body *');
           
           allElements.forEach(el => {
+            // Skip script tags and style tags
+            if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+            
+            // Add highlight class
             el.classList.add('lovable-editor-highlight');
             
-            el.addEventListener('click', (event) => {
+            // Remove any existing click events
+            const clone = el.cloneNode(true);
+            el.parentNode.replaceChild(clone, el);
+            
+            // Add new click event
+            clone.addEventListener('click', (event) => {
               event.preventDefault();
               event.stopPropagation();
               
@@ -140,13 +159,13 @@ const ViewPublished = () => {
               window.parent.postMessage({
                 type: 'ELEMENT_SELECTED',
                 element: {
-                  tagName: el.tagName,
-                  innerHTML: el.innerHTML,
-                  outerHTML: el.outerHTML,
-                  id: el.id,
-                  className: el.className,
+                  tagName: event.target.tagName,
+                  innerHTML: event.target.innerHTML,
+                  outerHTML: event.target.outerHTML,
+                  id: event.target.id,
+                  className: event.target.className,
                 },
-                text: el.textContent
+                text: event.target.textContent
               }, '*');
             });
           });
@@ -157,7 +176,7 @@ const ViewPublished = () => {
           const { action, data } = event.data;
           
           if (action === 'REMOVE_ELEMENT') {
-            const elements = document.querySelectorAll('button, a, p, h1, h2, h3, h4, h5, h6, span, div');
+            const elements = document.querySelectorAll('body *');
             elements.forEach(el => {
               if (
                 el.innerHTML === data.innerHTML || 
@@ -170,7 +189,7 @@ const ViewPublished = () => {
           }
           
           if (action === 'UPDATE_TEXT') {
-            const elements = document.querySelectorAll('button, a, p, h1, h2, h3, h4, h5, h6, span, div');
+            const elements = document.querySelectorAll('body *');
             elements.forEach(el => {
               if (
                 el.innerHTML === data.element.innerHTML || 
@@ -180,6 +199,41 @@ const ViewPublished = () => {
                 el.textContent = data.newText;
               }
             });
+          }
+          
+          if (action === 'CHANGE_FONT') {
+            const style = document.createElement('style');
+            style.textContent = \`
+              body, body * {
+                font-family: \${data.font}, sans-serif !important;
+              }
+            \`;
+            document.head.appendChild(style);
+          }
+          
+          if (action === 'CLEAN_LAYOUT') {
+            // Remove common copyright sections
+            const footers = document.querySelectorAll('footer, [class*="footer"], [id*="footer"]');
+            footers.forEach(el => el.remove());
+            
+            // Remove copyright texts
+            const elements = document.querySelectorAll('body *');
+            elements.forEach(el => {
+              if (el.textContent && 
+                  (el.textContent.toLowerCase().includes('copyright') || 
+                   el.textContent.toLowerCase().includes('©') ||
+                   el.textContent.toLowerCase().includes('all rights reserved'))) {
+                el.textContent = '';
+              }
+            });
+            
+            // Center main content
+            const mainContent = document.querySelector('main') || document.querySelector('body');
+            if (mainContent) {
+              mainContent.style.margin = '0 auto';
+              mainContent.style.maxWidth = '1200px';
+              mainContent.style.padding = '20px';
+            }
           }
           
           if (action === 'GET_HTML') {
@@ -195,7 +249,9 @@ const ViewPublished = () => {
           }
         });
 
+        // Initialize editor
         makeElementsSelectable();
+        console.log('Editor initialized');
       })();
       `;
       
@@ -225,6 +281,27 @@ const ViewPublished = () => {
         sendMessageToIframe('GET_HTML');
       }, 300);
     }
+  };
+  
+  // Change font
+  const handleChangeFont = (font: string) => {
+    setSelectedFont(font);
+    sendMessageToIframe('CHANGE_FONT', { font });
+    setTimeout(() => {
+      sendMessageToIframe('GET_HTML');
+    }, 300);
+  };
+  
+  // Clean layout and remove copyright
+  const handleCleanLayout = () => {
+    sendMessageToIframe('CLEAN_LAYOUT');
+    setTimeout(() => {
+      sendMessageToIframe('GET_HTML');
+      toast({
+        title: "Layout cleaned",
+        description: "Copyright content and unnecessary elements have been removed.",
+      });
+    }, 300);
   };
 
   // Get final HTML from iframe before saving
@@ -450,6 +527,44 @@ const ViewPublished = () => {
                         </HoverCard>
                       </>
                     )}
+                    
+                    {/* Font selector */}
+                    <div className="space-y-2 pt-4 border-t border-border">
+                      <Label>Change Font</Label>
+                      <Select value={selectedFont} onValueChange={handleChangeFont}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select font" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="default">Default Font</SelectItem>
+                          <SelectItem value="Arial">Arial</SelectItem>
+                          <SelectItem value="Georgia">Georgia</SelectItem>
+                          <SelectItem value="Verdana">Verdana</SelectItem>
+                          <SelectItem value="Tahoma">Tahoma</SelectItem>
+                          <SelectItem value="'Trebuchet MS'">Trebuchet MS</SelectItem>
+                          <SelectItem value="'Times New Roman'">Times New Roman</SelectItem>
+                          <SelectItem value="'Courier New'">Courier New</SelectItem>
+                          <SelectItem value="'Segoe UI'">Segoe UI</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Clean Layout Button */}
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          onClick={handleCleanLayout}
+                          className="w-full justify-start mt-2"
+                        >
+                          <Layout className="mr-2 h-4 w-4" />
+                          Remove Copyright & Clean Layout
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80">
+                        <p>Remove copyright content, footers, and improve the layout of the page.</p>
+                      </HoverCardContent>
+                    </HoverCard>
                   </div>
                   
                   <div className="flex gap-2 justify-end">
@@ -476,4 +591,3 @@ const ViewPublished = () => {
 };
 
 export default ViewPublished;
-
