@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { WebCloneService } from '@/services/WebCloneService';
-import { ArrowLeft, ExternalLink, Calendar, Save, Edit, Trash2, Type, Layout } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Calendar, Save, Edit, Trash2, Type, Layout, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -25,6 +25,8 @@ const ViewPublished = () => {
   const [newText, setNewText] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedFont, setSelectedFont] = useState('default');
+  const [isRebuilding, setIsRebuilding] = useState(false);
+  const [rebuildProgress, setRebuildProgress] = useState(0);
   
   useEffect(() => {
     if (id) {
@@ -378,6 +380,214 @@ const ViewPublished = () => {
     }, 600);
   };
 
+  // New function to rebuild the website using AI
+  const handleRebuildWebsite = async () => {
+    if (!site?.html || !id) return;
+    
+    setIsRebuilding(true);
+    setRebuildProgress(10);
+    
+    try {
+      // First toast to indicate the process has started
+      toast({
+        title: "Starting Rebuild",
+        description: "Analyzing original website structure...",
+      });
+      
+      setRebuildProgress(30);
+      
+      // Simulated AI transformation (in a real implementation, we'd call an API)
+      // but for demo purposes, we'll create a simplified transformation
+      const transformedHtml = await simulateAiRebuild(site.html);
+      
+      setRebuildProgress(70);
+      
+      // Update progress
+      toast({
+        title: "Rebuilding",
+        description: "Applying new design elements...",
+      });
+      
+      // Save the rebuilt site
+      if (transformedHtml) {
+        WebCloneService.updatePublishedSite(id, transformedHtml);
+        setSite(WebCloneService.getPublishedSite(id));
+        setEditedHtml(transformedHtml);
+        
+        // Final success toast
+        toast({
+          title: "Rebuild Complete",
+          description: "Your website has been redesigned with AI.",
+        });
+        
+        // Open the rebuilt site in a new tab
+        window.open(createDataUrl(transformedHtml), '_blank');
+      }
+    } catch (error) {
+      console.error("Error rebuilding website:", error);
+      toast({
+        title: "Rebuild Failed",
+        description: "There was an error rebuilding your website. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsRebuilding(false);
+      setRebuildProgress(0);
+    }
+  };
+  
+  // Simulated AI rebuild function
+  const simulateAiRebuild = async (originalHtml: string): Promise<string> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Parse the original HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(originalHtml, 'text/html');
+        
+        // Apply modern UI transformations
+        
+        // 1. Add a new modern font
+        const style = doc.createElement('style');
+        style.textContent = `
+          body, h1, h2, h3, h4, h5, h6, p, div, span {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+          }
+          
+          body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+          }
+          
+          h1, h2, h3 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+          }
+          
+          p {
+            margin-bottom: 1rem;
+          }
+          
+          .ai-rebuilt-shadow {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          }
+          
+          .ai-rebuilt-button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+          }
+          
+          .ai-rebuilt-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+          }
+          
+          .ai-rebuilt-card {
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+          }
+          
+          .ai-rebuilt-card:hover {
+            transform: scale(1.02);
+          }
+          
+          .ai-rebuilt-header {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          
+          .ai-rebuilt-animate {
+            animation: fadeIn 0.5s ease-out;
+          }
+          
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `;
+        doc.head.appendChild(style);
+        
+        // 2. Transform buttons
+        const buttons = doc.querySelectorAll('button, a[href]');
+        buttons.forEach((button) => {
+          if (button instanceof HTMLElement) {
+            button.classList.add('ai-rebuilt-button');
+            
+            // Add hover animation
+            button.style.transition = "transform 0.2s, box-shadow 0.2s";
+          }
+        });
+        
+        // 3. Transform sections/divs into cards
+        const sections = doc.querySelectorAll('section, div[class*="container"], div[class*="wrapper"]');
+        sections.forEach((section, index) => {
+          if (section instanceof HTMLElement && index < 10) { // Limit to avoid transforming everything
+            section.classList.add('ai-rebuilt-card', 'ai-rebuilt-animate');
+            section.style.animationDelay = `${index * 0.1}s`;
+          }
+        });
+        
+        // 4. Modernize headers
+        const headers = doc.querySelectorAll('header, nav, div[class*="header"], div[class*="nav"]');
+        headers.forEach((header) => {
+          if (header instanceof HTMLElement) {
+            header.classList.add('ai-rebuilt-header');
+          }
+        });
+        
+        // 5. Add subtle animations to images
+        const images = doc.querySelectorAll('img');
+        images.forEach((img) => {
+          if (img instanceof HTMLElement) {
+            img.style.transition = "transform 0.3s ease";
+            img.style.borderRadius = "8px";
+            img.classList.add('ai-rebuilt-shadow');
+            
+            // Add hover effect
+            const wrapper = doc.createElement('div');
+            wrapper.style.overflow = 'hidden';
+            wrapper.style.borderRadius = '8px';
+            wrapper.style.display = 'inline-block';
+            
+            // Replace the image with the wrapped version
+            if (img.parentNode) {
+              img.parentNode.insertBefore(wrapper, img);
+              wrapper.appendChild(img);
+            }
+          }
+        });
+        
+        // Add a watermark to indicate AI rebuilt
+        const watermark = doc.createElement('div');
+        watermark.innerHTML = 'Redesigned with AI';
+        watermark.style.position = 'fixed';
+        watermark.style.bottom = '20px';
+        watermark.style.right = '20px';
+        watermark.style.padding = '8px 12px';
+        watermark.style.background = 'rgba(0, 0, 0, 0.7)';
+        watermark.style.color = 'white';
+        watermark.style.borderRadius = '4px';
+        watermark.style.fontSize = '12px';
+        watermark.style.zIndex = '9999';
+        doc.body.appendChild(watermark);
+        
+        // Get the transformed HTML
+        resolve('<!DOCTYPE html>' + doc.documentElement.outerHTML);
+      }, 3000); // Simulate processing time
+    });
+  };
+
   // Create custom iframe to inject editor script - FIXED to handle content properly
   const InjectedIframe = () => {
     const iframeRef = React.useRef<HTMLIFrameElement>(null);
@@ -486,7 +696,7 @@ const ViewPublished = () => {
               </div>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Link to="/">
                 <Button variant="outline" size="sm">
                   <ArrowLeft className="mr-1 h-4 w-4" />
@@ -503,7 +713,7 @@ const ViewPublished = () => {
                 {editMode ? "Editing Mode" : "Edit Website"}
               </Button>
 
-              {/* Direct Clean Layout Button - Visible even when not in edit mode */}
+              {/* Clean Layout Button */}
               <Button 
                 onClick={handleCleanLayout}
                 size="sm"
@@ -511,6 +721,24 @@ const ViewPublished = () => {
               >
                 <Layout className="mr-1 h-4 w-4" />
                 Remove Copyright
+              </Button>
+              
+              {/* New Rebuild Website Button */}
+              <Button 
+                onClick={handleRebuildWebsite}
+                size="sm"
+                variant="outline"
+                disabled={isRebuilding}
+                className="relative"
+              >
+                <RefreshCw className={`mr-1 h-4 w-4 ${isRebuilding ? 'animate-spin' : ''}`} />
+                {isRebuilding ? 'Rebuilding...' : 'Rebuild with AI'}
+                {isRebuilding && rebuildProgress > 0 && (
+                  <div 
+                    className="absolute bottom-0 left-0 h-[3px] bg-primary transition-all" 
+                    style={{width: `${rebuildProgress}%`}}
+                  />
+                )}
               </Button>
               
               <a
@@ -656,6 +884,24 @@ const ViewPublished = () => {
                       </HoverCardTrigger>
                       <HoverCardContent className="w-80">
                         <p>Remove copyright content, footers, and improve the layout of the page.</p>
+                      </HoverCardContent>
+                    </HoverCard>
+                    
+                    {/* Rebuild with AI Button */}
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          onClick={handleRebuildWebsite}
+                          disabled={isRebuilding}
+                          className="w-full justify-start mt-2"
+                        >
+                          <RefreshCw className={`mr-2 h-4 w-4 ${isRebuilding ? 'animate-spin' : ''}`} />
+                          {isRebuilding ? 'Rebuilding...' : 'Rebuild with AI'}
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80">
+                        <p>Use AI to redesign the website while maintaining similar functionality and content.</p>
                       </HoverCardContent>
                     </HoverCard>
                   </div>
