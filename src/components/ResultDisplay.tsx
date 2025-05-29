@@ -128,9 +128,9 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
   };
 
   return (
-    <Card className="w-full mt-8 bg-secondary/20">
+    <Card className="w-full mt-8 bg-gradient-to-br from-white to-brand-50/30 border-brand-200/50 shadow-xl">
       <CardContent className="pt-6">
-        <h3 className="text-xl font-semibold mb-4">Clone Results</h3>
+        <h3 className="text-xl font-semibold mb-4 bg-gradient-to-r from-brand-700 to-electric-700 bg-clip-text text-transparent">Clone Results</h3>
         <div className="flex flex-col gap-4">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Source URL:</p>
@@ -140,7 +140,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
                 href={url} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="ml-2 text-supabase-600 hover:text-supabase-700"
+                className="ml-2 text-brand-600 hover:text-brand-700 transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
               </a>
@@ -158,7 +158,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
         <div className="flex justify-between gap-4 w-full">
           <Button 
             variant="outline" 
-            className="flex-1" 
+            className="flex-1 border-brand-200 hover:bg-brand-50 hover:text-brand-700" 
             onClick={handleCopyCode}
           >
             {copied ? (
@@ -174,7 +174,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
             )}
           </Button>
           <Button 
-            className="flex-1 bg-supabase-600 hover:bg-supabase-700 text-white" 
+            className="flex-1 bg-gradient-to-r from-brand-500 to-electric-500 hover:from-brand-600 hover:to-electric-600 text-white shadow-lg hover:shadow-xl transition-all duration-300" 
             onClick={handleDownloadHTML}
           >
             <Download className="mr-2 h-4 w-4" />
@@ -184,7 +184,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
         
         <div className="flex justify-between gap-4 w-full">
           <Button 
-            className="flex-1 bg-gradient-to-r from-supabase-600 to-supabase-700 hover:opacity-90 transition-opacity text-white" 
+            className="flex-1 bg-gradient-to-r from-electric-500 to-brand-600 hover:from-electric-600 hover:to-brand-700 transition-all duration-300 text-white shadow-lg hover:shadow-xl" 
             onClick={handleDownloadNextJS}
             disabled={downloading}
           >
@@ -198,7 +198,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
             )}
           </Button>
           <Button 
-            className="flex-1 bg-gradient-to-r from-supabase-500 to-supabase-600 hover:opacity-90 transition-opacity text-white" 
+            className="flex-1 bg-gradient-to-r from-brand-400 to-electric-400 hover:from-brand-500 hover:to-electric-500 transition-all duration-300 text-white shadow-lg hover:shadow-xl" 
             onClick={handlePublish}
             disabled={publishing}
           >

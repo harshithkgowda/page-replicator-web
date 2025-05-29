@@ -1,4 +1,3 @@
-
 class WebCloneServiceClass {
   async cloneWebsite(url: string): Promise<string> {
     try {
@@ -265,6 +264,30 @@ To learn more about Next.js, take a look at the following resources:
       console.error('Error publishing website:', error);
       throw new Error('Failed to publish website');
     }
+  }
+
+  getPublishedSite(publishId: string) {
+    const key = `published_${publishId}`;
+    const data = localStorage.getItem(key);
+    if (data) {
+      return JSON.parse(data);
+    }
+    return null;
+  }
+
+  updatePublishedSite(publishId: string, html: string) {
+    const key = `published_${publishId}`;
+    const existingData = this.getPublishedSite(publishId);
+    if (existingData) {
+      const updatedData = {
+        ...existingData,
+        html: html,
+        lastModified: new Date().toISOString()
+      };
+      localStorage.setItem(key, JSON.stringify(updatedData));
+      return true;
+    }
+    return false;
   }
 }
 
