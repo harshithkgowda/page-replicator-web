@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
-import { Globe, ArrowRight, Loader2 } from 'lucide-react';
+import { Globe, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 import { WebCloneService } from '@/services/WebCloneService';
 
 interface UrlFormProps {
@@ -59,7 +59,7 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
     
     try {
       toast({
-        title: "Cloning in progress",
+        title: "🚀 Cloning in progress",
         description: removeWatermarks ? 
           "Cloning website and removing watermarks..." : 
           "Cloning website...",
@@ -79,7 +79,7 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
       
       onCloneComplete(html, formattedUrl);
       toast({
-        title: "Success!",
+        title: "✨ Success!",
         description: removeWatermarks ? 
           "Website cloned successfully with watermarks removed" :
           "Website cloned successfully",
@@ -87,7 +87,7 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
     } catch (error) {
       console.error("Error cloning website:", error);
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to clone website. The website might be blocking our request or it's too large to clone.",
         variant: "destructive",
       });
@@ -98,50 +98,52 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
   };
 
   return (
-    <div className="w-full max-w-3xl">
-      <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
-        <div className="flex w-full flex-col sm:flex-row gap-2">
+    <div className="w-full max-w-4xl">
+      <form onSubmit={handleSubmit} className="flex w-full flex-col gap-6">
+        <div className="flex w-full flex-col sm:flex-row gap-4">
           <div className="relative flex-grow">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Globe className="h-5 w-5 text-muted-foreground" />
+            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <Globe className="h-5 w-5 text-psk-green" />
             </div>
             <Input
               type="text"
               placeholder="Enter website URL (e.g., example.com)"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="pl-10 h-12 bg-secondary/50"
+              className="pl-12 h-14 bg-psk-dark-secondary/50 border-psk-green/30 text-psk-white placeholder:text-psk-gray focus:border-psk-green text-lg glow-border"
             />
           </div>
           <Button 
             type="submit" 
             disabled={isSubmitting || !url.trim()} 
-            className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 transition-colors"
+            className="h-14 px-8 bg-psk-green text-psk-dark hover:bg-psk-green-dark transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-3 h-5 w-5 animate-spin" />
                 Cloning...
               </>
             ) : (
               <>
-                <ArrowRight className="mr-2 h-4 w-4" />
+                <ArrowRight className="mr-3 h-5 w-5" />
                 Clone Website
               </>
             )}
           </Button>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3 bg-psk-dark-secondary/30 p-4 rounded-lg border border-psk-green/20">
           <Checkbox 
             id="remove-watermarks" 
             checked={removeWatermarks}
             onCheckedChange={(checked) => setRemoveWatermarks(checked as boolean)}
+            className="border-psk-green/50 data-[state=checked]:bg-psk-green data-[state=checked]:border-psk-green"
           />
           <label 
             htmlFor="remove-watermarks" 
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm font-medium leading-none text-psk-white cursor-pointer flex items-center"
           >
+            <Sparkles className="mr-2 h-4 w-4 text-psk-green" />
             Remove watermarks and branding from cloned website
           </label>
         </div>

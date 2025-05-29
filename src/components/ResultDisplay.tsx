@@ -25,7 +25,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
     navigator.clipboard.writeText(html);
     setCopied(true);
     toast({
-      title: "Copied!",
+      title: "✨ Copied!",
       description: "HTML code copied to clipboard",
     });
     
@@ -52,7 +52,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
     URL.revokeObjectURL(downloadUrl);
     
     toast({
-      title: "Downloaded!",
+      title: "⬇️ Downloaded!",
       description: "HTML file has been downloaded",
     });
   };
@@ -91,12 +91,12 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
       URL.revokeObjectURL(downloadUrl);
       
       toast({
-        title: "Downloaded!",
+        title: "🚀 Downloaded!",
         description: "Next.js project has been downloaded. Extract and run 'npm install' then 'npm run dev'",
       });
     } catch (error) {
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to create Next.js project. Please try again.",
         variant: "destructive",
       });
@@ -111,14 +111,14 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
       const publishId = WebCloneService.publishWebsite(html, url);
       
       toast({
-        title: "Website Published!",
+        title: "🌐 Website Published!",
         description: "Your cloned website is now published and ready to view",
       });
       
       navigate(`/view/${publishId}`);
     } catch (error) {
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to publish website. Please try again.",
         variant: "destructive",
       });
@@ -128,37 +128,40 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
   };
 
   return (
-    <Card className="w-full mt-8 bg-secondary/20">
-      <CardContent className="pt-6">
-        <h3 className="text-xl font-semibold mb-4">Clone Results</h3>
-        <div className="flex flex-col gap-4">
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Source URL:</p>
-            <p className="text-sm flex items-center">
-              <span className="truncate">{url}</span>
+    <Card className="w-full mt-12 bg-psk-dark-secondary border-psk-green/30 glow-border">
+      <CardContent className="pt-8">
+        <h3 className="text-2xl font-bold mb-6 text-psk-white flex items-center">
+          <span className="w-2 h-2 bg-psk-green rounded-full mr-3 animate-pulse"></span>
+          Clone Results
+        </h3>
+        <div className="flex flex-col gap-6">
+          <div className="bg-psk-dark/50 p-4 rounded-lg border border-psk-green/20">
+            <p className="text-sm text-psk-green mb-2 font-semibold">Source URL:</p>
+            <p className="text-sm flex items-center text-psk-white">
+              <span className="truncate font-mono">{url}</span>
               <a 
                 href={url} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="ml-2 text-emerald-600 hover:text-emerald-700"
+                className="ml-3 text-psk-green hover:text-psk-green-light transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
               </a>
             </p>
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">HTML Size:</p>
-            <p className="text-sm">
+          <div className="bg-psk-dark/50 p-4 rounded-lg border border-psk-green/20">
+            <p className="text-sm text-psk-green mb-2 font-semibold">HTML Size:</p>
+            <p className="text-sm text-psk-white font-mono">
               {(html.length / 1024).toFixed(2)} KB ({html.length.toLocaleString()} characters)
             </p>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-4 pt-2 pb-6">
+      <CardFooter className="flex flex-col gap-4 pt-2 pb-8">
         <div className="flex justify-between gap-4 w-full">
           <Button 
             variant="outline" 
-            className="flex-1" 
+            className="flex-1 border-psk-green/50 text-psk-green hover:bg-psk-green/10 hover:border-psk-green" 
             onClick={handleCopyCode}
           >
             {copied ? (
@@ -174,7 +177,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
             )}
           </Button>
           <Button 
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700" 
+            className="flex-1 bg-psk-green text-psk-dark hover:bg-psk-green-dark font-semibold" 
             onClick={handleDownloadHTML}
           >
             <Download className="mr-2 h-4 w-4" />
@@ -184,7 +187,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
         
         <div className="flex justify-between gap-4 w-full">
           <Button 
-            className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:opacity-90 transition-opacity" 
+            className="flex-1 bg-gradient-to-r from-psk-green to-psk-green-light text-psk-dark hover:opacity-90 transition-opacity font-semibold" 
             onClick={handleDownloadNextJS}
             disabled={downloading}
           >
@@ -198,7 +201,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
             )}
           </Button>
           <Button 
-            className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-90 transition-opacity" 
+            className="flex-1 bg-gradient-to-r from-psk-green-light to-psk-green text-psk-dark hover:opacity-90 transition-opacity font-semibold" 
             onClick={handlePublish}
             disabled={publishing}
           >

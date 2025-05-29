@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Code, Sparkles, ExternalLink, Check } from 'lucide-react';
+import { Globe, Code, Sparkles, ExternalLink, Check, Zap, Download, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import UrlForm from '@/components/UrlForm';
@@ -19,26 +19,36 @@ const Index = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-psk-dark">
       <Header />
       
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-20 px-6 md:px-10">
-          <div className="container max-w-5xl mx-auto text-center">
-            <Badge className="mb-4 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-200">
-              Website Cloning Tool
+        <section className="relative py-20 px-6 md:px-10 overflow-hidden">
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-br from-psk-green/5 via-transparent to-psk-green/10"></div>
+          <div className="absolute top-20 right-20 w-64 h-64 bg-psk-green/10 rounded-full blur-3xl animate-pulse-slow"></div>
+          <div className="absolute bottom-20 left-20 w-48 h-48 bg-psk-green/5 rounded-full blur-2xl animate-pulse-slow"></div>
+          
+          <div className="container max-w-6xl mx-auto text-center relative z-10">
+            <Badge className="mb-6 bg-psk-green/20 text-psk-green border-psk-green/30 hover:bg-psk-green/30 text-sm font-semibold px-4 py-2">
+              ✨ Premium Website Cloning Tool
             </Badge>
             
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-emerald-700">Clone any website</span> with a single click
+            <h1 className="hero-text mb-8">
+              <span className="text-psk-white">Clone Any</span>
+              <br />
+              <span className="gradient-text animate-glow">Website</span>
+              <br />
+              <span className="text-psk-white">Instantly</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-              Enter a URL and instantly clone the entire website layout and design. Preview the result and download the HTML code or Next.js project.
+            <p className="text-xl md:text-2xl text-psk-gray-light max-w-4xl mx-auto mb-12 leading-relaxed font-medium">
+              Professional website cloning solutions that bring your ideas to life. 
+              From inspiration to implementation, we deliver exceptional development experiences.
             </p>
 
-            <div className="flex justify-center mb-12">
+            <div className="flex justify-center mb-16">
               <UrlForm onCloneComplete={handleCloneComplete} setLoading={setLoading} />
             </div>
 
@@ -51,37 +61,46 @@ const Index = () => {
         </section>
         
         {/* Features Section */}
-        <section className="py-20 bg-secondary/10">
-          <div className="container max-w-5xl mx-auto px-6 md:px-10">
+        <section className="py-20 bg-psk-dark-secondary border-t border-psk-green/20">
+          <div className="container max-w-6xl mx-auto px-6 md:px-10">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Our advanced web cloning technology makes it easy to replicate any website for learning, testing, or development purposes.
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-psk-white">
+                How <span className="gradient-text">PipCode</span> Works
+              </h2>
+              <p className="text-psk-gray-light max-w-3xl mx-auto text-lg leading-relaxed">
+                Our advanced web cloning technology makes it effortless to replicate any website 
+                for learning, testing, or development purposes.
               </p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-secondary/20 rounded-lg p-6 border border-border/50">
-                <Globe className="h-10 w-10 text-emerald-600 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Enter URL</h3>
-                <p className="text-muted-foreground">
-                  Simply paste the URL of any website you want to clone and let our system handle the rest.
+              <div className="bg-psk-dark glow-border rounded-xl p-8 hover:bg-psk-dark-secondary/50 transition-all duration-300 group">
+                <div className="w-16 h-16 bg-psk-green/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-psk-green/30 transition-colors">
+                  <Globe className="h-8 w-8 text-psk-green" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-psk-white">Enter URL</h3>
+                <p className="text-psk-gray-light leading-relaxed">
+                  Simply paste the URL of any website you want to clone and let our advanced system handle the rest automatically.
                 </p>
               </div>
               
-              <div className="bg-secondary/20 rounded-lg p-6 border border-border/50">
-                <Code className="h-10 w-10 text-emerald-600 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Extract Code</h3>
-                <p className="text-muted-foreground">
-                  Our system extracts the HTML, resolves relative links, and formats the code for immediate use.
+              <div className="bg-psk-dark glow-border rounded-xl p-8 hover:bg-psk-dark-secondary/50 transition-all duration-300 group">
+                <div className="w-16 h-16 bg-psk-green/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-psk-green/30 transition-colors">
+                  <Zap className="h-8 w-8 text-psk-green" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-psk-white">Extract & Process</h3>
+                <p className="text-psk-gray-light leading-relaxed">
+                  Our intelligent system extracts HTML, resolves assets, removes watermarks, and optimizes the code for immediate use.
                 </p>
               </div>
               
-              <div className="bg-secondary/20 rounded-lg p-6 border border-border/50">
-                <Sparkles className="h-10 w-10 text-emerald-600 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Preview & Download</h3>
-                <p className="text-muted-foreground">
-                  Instantly preview the cloned website and download the complete HTML or Next.js project for your use.
+              <div className="bg-psk-dark glow-border rounded-xl p-8 hover:bg-psk-dark-secondary/50 transition-all duration-300 group">
+                <div className="w-16 h-16 bg-psk-green/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-psk-green/30 transition-colors">
+                  <Download className="h-8 w-8 text-psk-green" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-psk-white">Download & Deploy</h3>
+                <p className="text-psk-gray-light leading-relaxed">
+                  Instantly preview and download as HTML or complete Next.js project ready for deployment and customization.
                 </p>
               </div>
             </div>
@@ -90,64 +109,77 @@ const Index = () => {
         
         {/* Benefits Section */}
         <section className="py-20 px-6 md:px-10">
-          <div className="container max-w-5xl mx-auto">
+          <div className="container max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
-                <h2 className="text-3xl font-bold mb-6">Why Use PipCode?</h2>
-                <ul className="space-y-4">
+                <h2 className="text-4xl md:text-5xl font-bold mb-8 text-psk-white">
+                  Why Choose <span className="gradient-text">PipCode</span>?
+                </h2>
+                <ul className="space-y-6">
                   <li className="flex items-start">
-                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
-                      <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="mr-4 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-psk-green/20 border border-psk-green/30">
+                      <Check className="h-4 w-4 text-psk-green" />
                     </span>
                     <div>
-                      <h3 className="font-semibold">Learning & Inspiration</h3>
-                      <p className="text-muted-foreground">Study how popular websites are structured and designed</p>
+                      <h3 className="text-xl font-bold text-psk-white mb-2">Learning & Inspiration</h3>
+                      <p className="text-psk-gray-light leading-relaxed">Study how popular websites are structured and designed to accelerate your development skills</p>
                     </div>
                   </li>
                   <li className="flex items-start">
-                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
-                      <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="mr-4 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-psk-green/20 border border-psk-green/30">
+                      <Zap className="h-4 w-4 text-psk-green" />
                     </span>
                     <div>
-                      <h3 className="font-semibold">Quick Templates</h3>
-                      <p className="text-muted-foreground">Start projects faster by using cloned sites as templates</p>
+                      <h3 className="text-xl font-bold text-psk-white mb-2">Quick Templates</h3>
+                      <p className="text-psk-gray-light leading-relaxed">Start projects faster by using professionally cloned sites as foundation templates</p>
                     </div>
                   </li>
                   <li className="flex items-start">
-                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
-                      <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="mr-4 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-psk-green/20 border border-psk-green/30">
+                      <Shield className="h-4 w-4 text-psk-green" />
                     </span>
                     <div>
-                      <h3 className="font-semibold">Testing & Development</h3>
-                      <p className="text-muted-foreground">Create offline copies of websites for testing or development</p>
+                      <h3 className="text-xl font-bold text-psk-white mb-2">Testing & Development</h3>
+                      <p className="text-psk-gray-light leading-relaxed">Create secure offline copies of websites for testing, development and experimentation</p>
                     </div>
                   </li>
                 </ul>
               </div>
               
-              <div className="bg-secondary/20 border border-border/50 rounded-lg p-8">
+              <div className="bg-psk-dark-secondary glow-border rounded-xl p-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-psk-green/10 rounded-full blur-2xl"></div>
                 <div className="relative">
-                  <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 opacity-30 blur"></div>
-                  <div className="relative bg-background rounded-lg p-6">
-                    <h3 className="text-xl font-semibold mb-4">Getting Started</h3>
-                    <ol className="list-decimal list-inside space-y-2 text-muted-foreground ml-4">
-                      <li>Enter the full URL of the website you want to clone</li>
-                      <li>Choose whether to remove watermarks and branding</li>
-                      <li>Click "Clone Website" and wait for the process to complete</li>
-                      <li>Preview the cloned website in the interactive viewer</li>
-                      <li>Download as HTML or Next.js project for your development needs</li>
-                    </ol>
-                    
-                    <p className="mt-4 text-sm text-muted-foreground">
-                      Note: Use responsibly. Respect intellectual property rights when using cloned content.
+                  <h3 className="text-2xl font-bold mb-6 text-psk-white">Getting Started</h3>
+                  <ol className="space-y-4 text-psk-gray-light">
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-psk-green text-psk-dark text-sm font-bold">1</span>
+                      <span>Enter the full URL of the website you want to clone</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-psk-green text-psk-dark text-sm font-bold">2</span>
+                      <span>Choose whether to remove watermarks and branding</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-psk-green text-psk-dark text-sm font-bold">3</span>
+                      <span>Click "Clone Website" and wait for processing</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-psk-green text-psk-dark text-sm font-bold">4</span>
+                      <span>Preview and download as HTML or Next.js project</span>
+                    </li>
+                  </ol>
+                  
+                  <div className="mt-8 p-4 bg-psk-green/10 border border-psk-green/30 rounded-lg">
+                    <p className="text-sm text-psk-green font-medium">
+                      ⚡ Pro Tip: Use responsibly and respect intellectual property rights when using cloned content.
                     </p>
-                    
-                    <div className="mt-6 flex justify-end">
-                      <a href="#" className="text-sm flex items-center text-emerald-600 hover:underline">
-                        View Documentation
-                        <ExternalLink className="ml-1 h-3 w-3" />
-                      </a>
-                    </div>
+                  </div>
+                  
+                  <div className="mt-6 flex justify-end">
+                    <a href="#" className="text-sm flex items-center text-psk-green hover:text-psk-green-light transition-colors">
+                      View Documentation
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
                   </div>
                 </div>
               </div>

@@ -63,12 +63,16 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				clone: {
-					primary: '#059669', // emerald-600
-					secondary: '#047857', // emerald-700
-					accent: '#10b981', // emerald-500
-					background: '#0F172A', // slate-900
-					foreground: '#F8FAFC', // slate-50
+				// PSK Services inspired color palette
+				psk: {
+					dark: '#0a0a0a',
+					'dark-secondary': '#1a1a1a',
+					green: '#00ff88',
+					'green-dark': '#00cc6a',
+					'green-light': '#33ff99',
+					white: '#ffffff',
+					gray: '#666666',
+					'gray-light': '#999999'
 				}
 			},
 			borderRadius: {
@@ -100,6 +104,10 @@ export default {
 				'fade-in': {
 					'0%': { opacity: '0' },
 					'100%': { opacity: '1' },
+				},
+				'glow': {
+					'0%, 100%': { boxShadow: '0 0 20px rgba(0, 255, 136, 0.3)' },
+					'50%': { boxShadow: '0 0 30px rgba(0, 255, 136, 0.6)' },
 				}
 			},
 			animation: {
@@ -107,6 +115,10 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-slow': 'pulse-slow 4s ease-in-out infinite',
 				'fade-in': 'fade-in 0.5s ease-out',
+				'glow': 'glow 2s ease-in-out infinite',
+			},
+			fontFamily: {
+				'heading': ['Inter', 'sans-serif'],
 			}
 		}
 	},
