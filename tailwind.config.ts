@@ -64,9 +64,9 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				clone: {
-					primary: '#3B82F6', // blue-500
-					secondary: '#1E40AF', // blue-800
-					accent: '#60A5FA', // blue-400
+					primary: '#059669', // emerald-600
+					secondary: '#047857', // emerald-700
+					accent: '#10b981', // emerald-500
 					background: '#0F172A', // slate-900
 					foreground: '#F8FAFC', // slate-50
 				}

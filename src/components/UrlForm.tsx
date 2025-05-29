@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { Globe, ArrowRight, Loader2 } from 'lucide-react';
 import { WebCloneService } from '@/services/WebCloneService';
@@ -14,6 +15,7 @@ interface UrlFormProps {
 const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
   const [url, setUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [removeWatermarks, setRemoveWatermarks] = useState(true);
   const { toast } = useToast();
 
   const isValidUrl = (url: string) => {
@@ -56,15 +58,21 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
     setLoading(true);
     
     try {
-      // Show a toast that we're trying to clone the site
       toast({
         title: "Cloning in progress",
-        description: "This may take a moment for larger websites...",
+        description: removeWatermarks ? 
+          "Cloning website and removing watermarks..." : 
+          "Cloning website...",
       });
       
-      const html = await WebCloneService.cloneWebsite(formattedUrl);
+      let html = await WebCloneService.cloneWebsite(formattedUrl);
       
-      // Check if we got a meaningful response
+      // Remove watermarks if requested
+      if (removeWatermarks && html) {
+        html = WebCloneService.removeWatermarks(html);
+        console.log("Watermarks removed from cloned content");
+      }
+      
       if (!html || html.length < 1000) {
         throw new Error("The cloned content seems incomplete. Try another website.");
       }
@@ -72,13 +80,15 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
       onCloneComplete(html, formattedUrl);
       toast({
         title: "Success!",
-        description: "Website cloned successfully",
+        description: removeWatermarks ? 
+          "Website cloned successfully with watermarks removed" :
+          "Website cloned successfully",
       });
     } catch (error) {
       console.error("Error cloning website:", error);
       toast({
         title: "Error",
-        description: "Failed to clone website. We tried multiple proxy services but couldn't access the complete site. The website might be blocking our request or it's too large to clone.",
+        description: "Failed to clone website. The website might be blocking our request or it's too large to clone.",
         variant: "destructive",
       });
     } finally {
@@ -88,37 +98,55 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full max-w-3xl flex-col sm:flex-row gap-2">
-      <div className="relative flex-grow">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <Globe className="h-5 w-5 text-muted-foreground" />
+    <div className="w-full max-w-3xl">
+      <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
+        <div className="flex w-full flex-col sm:flex-row gap-2">
+          <div className="relative flex-grow">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Globe className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <Input
+              type="text"
+              placeholder="Enter website URL (e.g., example.com)"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="pl-10 h-12 bg-secondary/50"
+            />
+          </div>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting || !url.trim()} 
+            className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 transition-colors"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Cloning...
+              </>
+            ) : (
+              <>
+                <ArrowRight className="mr-2 h-4 w-4" />
+                Clone Website
+              </>
+            )}
+          </Button>
         </div>
-        <Input
-          type="text"
-          placeholder="Enter website URL (e.g., example.com)"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          className="pl-10 h-12 bg-secondary/50"
-        />
-      </div>
-      <Button 
-        type="submit" 
-        disabled={isSubmitting || !url.trim()} 
-        className="h-12 px-6 bg-clone-primary hover:bg-clone-secondary transition-colors"
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Cloning...
-          </>
-        ) : (
-          <>
-            <ArrowRight className="mr-2 h-4 w-4" />
-            Clone Website
-          </>
-        )}
-      </Button>
-    </form>
+        
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="remove-watermarks" 
+            checked={removeWatermarks}
+            onCheckedChange={(checked) => setRemoveWatermarks(checked as boolean)}
+          />
+          <label 
+            htmlFor="remove-watermarks" 
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Remove watermarks and branding from cloned website
+          </label>
+        </div>
+      </form>
+    </div>
   );
 };
 

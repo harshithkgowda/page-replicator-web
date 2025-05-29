@@ -10,8 +10,8 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex gap-6 md:gap-10">
           <Link to="/" className="flex items-center space-x-2">
-            <Globe className="h-6 w-6 text-clone-accent" />
-            <span className="font-bold text-lg hidden md:inline-block">WebsiteCloner</span>
+            <Globe className="h-6 w-6 text-emerald-600" />
+            <span className="font-bold text-lg hidden md:inline-block">PipCode</span>
           </Link>
           
           <nav className="hidden md:flex gap-6">
@@ -30,7 +30,7 @@ const Header = () => {
           <Button variant="outline" size="sm">
             Documentation
           </Button>
-          <Button size="sm" className="bg-clone-primary hover:bg-clone-secondary">
+          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
             Get Started
           </Button>
         </div>

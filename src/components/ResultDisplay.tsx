@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Download, Copy, CheckCheck, ExternalLink, Globe } from 'lucide-react';
+import { Download, Copy, CheckCheck, ExternalLink, Globe, Package } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { WebCloneService } from '@/services/WebCloneService';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ interface ResultDisplayProps {
 const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
   const [copied, setCopied] = React.useState(false);
   const [publishing, setPublishing] = React.useState(false);
+  const [downloading, setDownloading] = React.useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -31,12 +32,11 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
     setTimeout(() => setCopied(false), 2000);
   };
   
-  const handleDownload = () => {
+  const handleDownloadHTML = () => {
     const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
+    const downloadUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     
-    // Extract domain for filename
     let domain = "";
     try {
       domain = new URL(url).hostname.replace('www.', '');
@@ -44,12 +44,12 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
       domain = "website";
     }
     
-    a.href = url;
+    a.href = downloadUrl;
     a.download = `${domain}-clone.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(downloadUrl);
     
     toast({
       title: "Downloaded!",
@@ -57,10 +57,57 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
     });
   };
 
+  const handleDownloadNextJS = async () => {
+    setDownloading(true);
+    try {
+      // Convert HTML to Next.js project structure
+      const nextjsProject = WebCloneService.convertToNextJS(html, url);
+      
+      // Create a zip file with the project structure
+      const zip = await import('jszip');
+      const zipInstance = new zip.default();
+      
+      // Add all the Next.js project files
+      Object.entries(nextjsProject.files).forEach(([path, content]) => {
+        zipInstance.file(path, content);
+      });
+      
+      const blob = await zipInstance.generateAsync({ type: 'blob' });
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      
+      let domain = "";
+      try {
+        domain = new URL(url).hostname.replace('www.', '');
+      } catch {
+        domain = "website";
+      }
+      
+      a.href = downloadUrl;
+      a.download = `${domain}-nextjs-project.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(downloadUrl);
+      
+      toast({
+        title: "Downloaded!",
+        description: "Next.js project has been downloaded. Extract and run 'npm install' then 'npm run dev'",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create Next.js project. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const handlePublish = () => {
     setPublishing(true);
     try {
-      // Publish the website and get the unique ID
       const publishId = WebCloneService.publishWebsite(html, url);
       
       toast({
@@ -68,7 +115,6 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
         description: "Your cloned website is now published and ready to view",
       });
       
-      // Navigate to the published site
       navigate(`/view/${publishId}`);
     } catch (error) {
       toast({
@@ -94,7 +140,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
                 href={url} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="ml-2 text-clone-accent hover:text-clone-primary"
+                className="ml-2 text-emerald-600 hover:text-emerald-700"
               >
                 <ExternalLink className="h-4 w-4" />
               </a>
@@ -128,27 +174,44 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
             )}
           </Button>
           <Button 
-            className="flex-1 bg-clone-primary hover:bg-clone-secondary" 
-            onClick={handleDownload}
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700" 
+            onClick={handleDownloadHTML}
           >
             <Download className="mr-2 h-4 w-4" />
             Download HTML
           </Button>
         </div>
-        <Button 
-          className="w-full bg-gradient-to-r from-clone-primary to-clone-accent hover:opacity-90 transition-opacity" 
-          onClick={handlePublish}
-          disabled={publishing}
-        >
-          {publishing ? (
-            <>Processing...</>
-          ) : (
-            <>
-              <Globe className="mr-2 h-4 w-4" />
-              Publish Cloned Website
-            </>
-          )}
-        </Button>
+        
+        <div className="flex justify-between gap-4 w-full">
+          <Button 
+            className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:opacity-90 transition-opacity" 
+            onClick={handleDownloadNextJS}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <>Processing...</>
+            ) : (
+              <>
+                <Package className="mr-2 h-4 w-4" />
+                Download Next.js Project
+              </>
+            )}
+          </Button>
+          <Button 
+            className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-90 transition-opacity" 
+            onClick={handlePublish}
+            disabled={publishing}
+          >
+            {publishing ? (
+              <>Publishing...</>
+            ) : (
+              <>
+                <Globe className="mr-2 h-4 w-4" />
+                Publish Website
+              </>
+            )}
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

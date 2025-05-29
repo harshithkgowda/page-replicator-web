@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="container flex flex-col md:flex-row items-center justify-between py-10 md:h-24 md:py-0">
         <div className="flex flex-col items-center md:items-start">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} WebsiteCloner. All rights reserved.
+            &copy; {new Date().getFullYear()} PipCode. All rights reserved.
           </p>
         </div>
         
