@@ -10,13 +10,8 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex gap-6 md:gap-10">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="relative">
-              <Globe className="h-6 w-6 text-transparent bg-gradient-to-r from-brand-500 to-electric-500 bg-clip-text" />
-              <div className="absolute inset-0 h-6 w-6 bg-gradient-to-r from-brand-500 to-electric-500 rounded-full opacity-20 blur-sm"></div>
-            </div>
-            <span className="font-bold text-lg hidden md:inline-block bg-gradient-to-r from-brand-600 to-electric-600 bg-clip-text text-transparent">
-              PipCode
-            </span>
+            <Globe className="h-6 w-6 text-emerald-600" />
+            <span className="font-bold text-lg hidden md:inline-block">PipCode</span>
           </Link>
           
           <nav className="hidden md:flex gap-6">
@@ -32,10 +27,10 @@ const Header = () => {
         </div>
         
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="border-brand-200 hover:bg-brand-50">
+          <Button variant="outline" size="sm">
             Documentation
           </Button>
-          <Button size="sm" className="bg-gradient-to-r from-brand-500 to-electric-500 hover:from-brand-600 hover:to-electric-600 text-white shadow-lg">
+          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
             Get Started
           </Button>
         </div>

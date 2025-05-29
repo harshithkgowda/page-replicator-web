@@ -110,13 +110,13 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
               placeholder="Enter website URL (e.g., example.com)"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="pl-10 h-12 bg-secondary/50 border-brand-200 focus:border-brand-400 focus:ring-brand-400"
+              className="pl-10 h-12 bg-secondary/50"
             />
           </div>
           <Button 
             type="submit" 
             disabled={isSubmitting || !url.trim()} 
-            className="h-12 px-6 bg-gradient-to-r from-brand-500 to-electric-500 hover:from-brand-600 hover:to-electric-600 transition-all duration-300 text-white shadow-lg hover:shadow-xl"
+            className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 transition-colors"
           >
             {isSubmitting ? (
               <>
@@ -137,7 +137,6 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
             id="remove-watermarks" 
             checked={removeWatermarks}
             onCheckedChange={(checked) => setRemoveWatermarks(checked as boolean)}
-            className="border-brand-300 data-[state=checked]:bg-brand-500"
           />
           <label 
             htmlFor="remove-watermarks" 
