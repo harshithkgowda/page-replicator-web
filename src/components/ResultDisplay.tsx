@@ -64,15 +64,15 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
       const nextjsProject = WebCloneService.convertToNextJS(html, url);
       
       // Create a zip file with the project structure
-      const zip = await import('jszip');
-      const zipInstance = new zip.default();
+      const { default: JSZip } = await import('jszip');
+      const zip = new JSZip();
       
       // Add all the Next.js project files
       Object.entries(nextjsProject.files).forEach(([path, content]) => {
-        zipInstance.file(path, content);
+        zip.file(path, content as string);
       });
       
-      const blob = await zipInstance.generateAsync({ type: 'blob' });
+      const blob = await zip.generateAsync({ type: 'blob' });
       const downloadUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       
@@ -140,7 +140,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
                 href={url} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="ml-2 text-emerald-600 hover:text-emerald-700"
+                className="ml-2 text-supabase-600 hover:text-supabase-700"
               >
                 <ExternalLink className="h-4 w-4" />
               </a>
@@ -174,7 +174,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
             )}
           </Button>
           <Button 
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700" 
+            className="flex-1 bg-supabase-600 hover:bg-supabase-700 text-white" 
             onClick={handleDownloadHTML}
           >
             <Download className="mr-2 h-4 w-4" />
@@ -184,7 +184,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
         
         <div className="flex justify-between gap-4 w-full">
           <Button 
-            className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:opacity-90 transition-opacity" 
+            className="flex-1 bg-gradient-to-r from-supabase-600 to-supabase-700 hover:opacity-90 transition-opacity text-white" 
             onClick={handleDownloadNextJS}
             disabled={downloading}
           >
@@ -198,7 +198,7 @@ const ResultDisplay = ({ html, url }: ResultDisplayProps) => {
             )}
           </Button>
           <Button 
-            className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:opacity-90 transition-opacity" 
+            className="flex-1 bg-gradient-to-r from-supabase-500 to-supabase-600 hover:opacity-90 transition-opacity text-white" 
             onClick={handlePublish}
             disabled={publishing}
           >

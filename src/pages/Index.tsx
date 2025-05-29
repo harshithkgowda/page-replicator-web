@@ -26,12 +26,12 @@ const Index = () => {
         {/* Hero Section */}
         <section className="py-20 px-6 md:px-10">
           <div className="container max-w-5xl mx-auto text-center">
-            <Badge className="mb-4 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-200">
+            <Badge className="mb-4 bg-supabase-500/10 text-supabase-600 hover:bg-supabase-500/20 border-supabase-200">
               Website Cloning Tool
             </Badge>
             
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-emerald-700">Clone any website</span> with a single click
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-supabase-500 to-supabase-700">Clone any website</span> with a single click
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
@@ -62,7 +62,7 @@ const Index = () => {
             
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-secondary/20 rounded-lg p-6 border border-border/50">
-                <Globe className="h-10 w-10 text-emerald-600 mb-4" />
+                <Globe className="h-10 w-10 text-supabase-600 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Enter URL</h3>
                 <p className="text-muted-foreground">
                   Simply paste the URL of any website you want to clone and let our system handle the rest.
@@ -70,7 +70,7 @@ const Index = () => {
               </div>
               
               <div className="bg-secondary/20 rounded-lg p-6 border border-border/50">
-                <Code className="h-10 w-10 text-emerald-600 mb-4" />
+                <Code className="h-10 w-10 text-supabase-600 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Extract Code</h3>
                 <p className="text-muted-foreground">
                   Our system extracts the HTML, resolves relative links, and formats the code for immediate use.
@@ -78,7 +78,7 @@ const Index = () => {
               </div>
               
               <div className="bg-secondary/20 rounded-lg p-6 border border-border/50">
-                <Sparkles className="h-10 w-10 text-emerald-600 mb-4" />
+                <Sparkles className="h-10 w-10 text-supabase-600 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Preview & Download</h3>
                 <p className="text-muted-foreground">
                   Instantly preview the cloned website and download the complete HTML or Next.js project for your use.
@@ -96,8 +96,8 @@ const Index = () => {
                 <h2 className="text-3xl font-bold mb-6">Why Use PipCode?</h2>
                 <ul className="space-y-4">
                   <li className="flex items-start">
-                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
-                      <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-supabase-500/20">
+                      <Check className="h-3 w-3 text-supabase-600" />
                     </span>
                     <div>
                       <h3 className="font-semibold">Learning & Inspiration</h3>
@@ -105,8 +105,8 @@ const Index = () => {
                     </div>
                   </li>
                   <li className="flex items-start">
-                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
-                      <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-supabase-500/20">
+                      <Check className="h-3 w-3 text-supabase-600" />
                     </span>
                     <div>
                       <h3 className="font-semibold">Quick Templates</h3>
@@ -114,8 +114,8 @@ const Index = () => {
                     </div>
                   </li>
                   <li className="flex items-start">
-                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
-                      <Check className="h-3 w-3 text-emerald-600" />
+                    <span className="mr-2 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-supabase-500/20">
+                      <Check className="h-3 w-3 text-supabase-600" />
                     </span>
                     <div>
                       <h3 className="font-semibold">Testing & Development</h3>
@@ -127,7 +127,7 @@ const Index = () => {
               
               <div className="bg-secondary/20 border border-border/50 rounded-lg p-8">
                 <div className="relative">
-                  <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 opacity-30 blur"></div>
+                  <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-supabase-500 to-supabase-600 opacity-30 blur"></div>
                   <div className="relative bg-background rounded-lg p-6">
                     <h3 className="text-xl font-semibold mb-4">Getting Started</h3>
                     <ol className="list-decimal list-inside space-y-2 text-muted-foreground ml-4">
@@ -143,7 +143,7 @@ const Index = () => {
                     </p>
                     
                     <div className="mt-6 flex justify-end">
-                      <a href="#" className="text-sm flex items-center text-emerald-600 hover:underline">
+                      <a href="#" className="text-sm flex items-center text-supabase-600 hover:underline">
                         View Documentation
                         <ExternalLink className="ml-1 h-3 w-3" />
                       </a>

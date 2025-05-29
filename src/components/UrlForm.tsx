@@ -116,7 +116,7 @@ const UrlForm = ({ onCloneComplete, setLoading }: UrlFormProps) => {
           <Button 
             type="submit" 
             disabled={isSubmitting || !url.trim()} 
-            className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 transition-colors"
+            className="h-12 px-6 bg-supabase-600 hover:bg-supabase-700 transition-colors text-white"
           >
             {isSubmitting ? (
               <>
